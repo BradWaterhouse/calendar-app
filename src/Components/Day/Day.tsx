@@ -1,10 +1,12 @@
 import React, {FC, ReactElement} from "react";
 import {Typography} from "@mui/material";
 import {DateTime} from "luxon";
+import {CalendarEvent} from "../../Interfaces/CalendarEvent";
 
 interface Props {
     day: number;
-    date: DateTime
+    date: DateTime;
+    events: CalendarEvent[];
 }
 
 const Day: FC<Props> = (props: Props): ReactElement => {
@@ -27,7 +29,11 @@ const Day: FC<Props> = (props: Props): ReactElement => {
                 &nbsp;
                 <b>{props.date.weekdayShort}</b>
             </span>
-            <Typography className="mt-2" variant={"body1"}>Some Event</Typography>
+
+            {props.events.map((event: CalendarEvent): ReactElement =>
+                <Typography className="mt-2" variant={"body1"}>{event.name} {"-"} {event.time}</Typography>
+            )}
+
         </div>
     </>
 }

@@ -10,8 +10,6 @@ interface Props {
 }
 
 const Day: FC<Props> = (props: Props): ReactElement => {
-    console.log(props.date);
-    console.log(DateTime.local().toFormat('y-MM-dd'));
     return <>
         <div className="column is-2 mb-1"
              style={{
@@ -22,7 +20,8 @@ const Day: FC<Props> = (props: Props): ReactElement => {
                  borderWidth: 1.5,
                  minHeight: 175,
                  maxHeight: 175,
-                 background: (props.date.toFormat('y-MM-dd') === DateTime.local().toFormat('y-MM-dd') ? "#dad9d9" : "white")
+                 background: (props.date.toFormat('y-MM-dd') === DateTime.local().toFormat('y-MM-dd') ? "#dad9d9" : "white"),
+                 cursor: "pointer"
         }}>
             <span>
                 <b style={{color: "red"}}>{props.day}</b>
@@ -30,8 +29,8 @@ const Day: FC<Props> = (props: Props): ReactElement => {
                 <b>{props.date.weekdayShort}</b>
             </span>
 
-            {props.events.map((event: CalendarEvent): ReactElement =>
-                <Typography className="mt-2" variant={"body1"}>{event.name} {"-"} {event.time}</Typography>
+            {props.events.map((event: CalendarEvent, index: number): ReactElement =>
+                <Typography key={index} className="mt-2" variant={"body1"}>{event.title} {"-"} {event.time}</Typography>
             )}
 
         </div>

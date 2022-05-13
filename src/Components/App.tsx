@@ -1,32 +1,55 @@
-import React, {FC, ReactElement, useState} from 'react';
+import React, {FC, ReactElement, useEffect, useState} from 'react';
 import {SelectChangeEvent, Typography} from '@mui/material';
 import SelectCalendar from "./SelectCalendar/SelectCalendar";
 import Day from "./Day/Day";
 import {DateTime} from "luxon";
 import SelectDate from "./SelectDate/SelectDate";
 import {CalendarEvent} from "../Interfaces/CalendarEvent";
+import {useAbortController} from "../Hooks/UseAbortController/UseAbortController";
 
 interface Calendar {
     id: number;
     name: string;
 }
 
-const calendarsDummyData: Calendar[] = [
-    {id: 1, name: "Brad's calendar"},
-    {id: 2, name: "Em's calendar"}
-]
-
-const calendarDummyEvents: CalendarEvent[] = [
-    {id: 1, name: "Dentists", date: "2022-05-08", time: "14:30", information: "check up"},
-    {id: 2, name: "Car MOT", date: "2022-05-09", time: "14:30", information: "MOT"},
-    {id: 2, name: "Car Service", date: "2022-05-09", time: "16:30", information: "MOT"},
-    {id: 2, name: "Vets", date: "2022-06-09", time: "16:30", information: "Vets"},
-]
-
 const App: FC = (): ReactElement => {
-    const [selectedCalendarId, setSelectedCalendarId] = useState<number>(calendarsDummyData[0].id);
+    const [calendars, setCalendars] = useState<Calendar[]>([]);
+    const [selectedCalendarId, setSelectedCalendarId] = useState<number>(0);
     const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.local);
-    const [events, setEvents] = useState<CalendarEvent[]>(calendarDummyEvents)
+    const [events, setEvents] = useState<CalendarEvent[]>([]);
+
+    const [controller] = useAbortController(1);
+
+    useEffect((): void => fetchCalendars(), [])
+
+    useEffect((): void => fetchEvents(), [selectedCalendarId]);
+
+    const fetchCalendars = (): void => {
+        fetch("http://127.0.0.1:8888/calendar/select", {
+            method: "GET",
+            signal: controller.signal,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then((response: Response) => response.json())
+            .then((data: Calendar[]): void => setCalendars(data))
+            .catch((error: ErrorEvent): void => console.log('error: ', error.message))
+    }
+
+    const fetchEvents = (): void => {
+        fetch("http://127.0.0.1:8888/calendar/events", {
+            method: "POST",
+            signal: controller.signal,
+            body: JSON.stringify({id: selectedCalendarId}),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then((response: Response) => response.json())
+            .then((data: CalendarEvent[]): void => setEvents(data))
+            .catch((error: ErrorEvent): void => console.log('error: ', error.message))
+    }
 
     const handleSelect = (event: SelectChangeEvent<number>): void => setSelectedCalendarId(event.target.value as number);
 
@@ -47,8 +70,7 @@ const App: FC = (): ReactElement => {
         return days;
     }
 
-    const getEventsForDate = (date: string): CalendarEvent[] => events.filter((event: CalendarEvent) => event.date === date);
-
+    const getEventsForDate = (date: string): CalendarEvent[] => events.filter((event: CalendarEvent) => DateTime.fromISO(event.date).toFormat('y-MM-dd') === date);
 
   return (
     <div className="container">
@@ -59,7 +81,7 @@ const App: FC = (): ReactElement => {
         </div>
       </div>
 
-        <SelectCalendar calendars={calendarsDummyData} selectedCalendarId={selectedCalendarId} handleChange={handleSelect} />
+        <SelectCalendar calendars={calendars} selectedCalendarId={selectedCalendarId} handleChange={handleSelect} />
 
         <SelectDate
             handleNextMonthChange={handleNextMonth}
@@ -69,11 +91,16 @@ const App: FC = (): ReactElement => {
         />
 
         <div className="columns is-multiline">
-            {getDaysInSelectedMonth().map((day: number) => {
+            {getDaysInSelectedMonth().map((day: number): ReactElement => {
                 const startOfMonthMinusOneDay = selectedDate.startOf("month").minus({day: 1});
                 const date = startOfMonthMinusOneDay.plus({day: day});
 
-                return <Day key={day} day={day} date={date} events={getEventsForDate(date.toFormat('y-MM-dd'))} />
+                return <Day
+                    key={day}
+                    day={day}
+                    date={date}
+                    events={getEventsForDate(date.toFormat('y-MM-dd'))}
+                />
             })}
         </div>
 

@@ -1,5 +1,5 @@
 import React, {FC, ReactElement, useEffect, useState} from 'react';
-import {SelectChangeEvent, Typography} from '@mui/material';
+import {Alert, SelectChangeEvent, Typography} from '@mui/material';
 import SelectCalendar from "./SelectCalendar/SelectCalendar";
 import Day from "./Day/Day";
 import {DateTime} from "luxon";
@@ -17,6 +17,7 @@ const App: FC = (): ReactElement => {
     const [selectedCalendarId, setSelectedCalendarId] = useState<number>(0);
     const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.local);
     const [events, setEvents] = useState<CalendarEvent[]>([]);
+    const [error, setError] = useState<string>("");
 
     const [controller] = useAbortController(1);
 
@@ -34,7 +35,11 @@ const App: FC = (): ReactElement => {
         })
             .then((response: Response) => response.json())
             .then((data: Calendar[]): void => setCalendars(data))
-            .catch((error: ErrorEvent): void => console.log('error: ', error.message))
+            .catch((error: ErrorEvent): void => {
+                console.log(error.message);
+                setError("There has been an error displaying your calendars, please refresh the page and try again")
+                }
+            )
     }
 
     const fetchEvents = (): void => {
@@ -48,7 +53,11 @@ const App: FC = (): ReactElement => {
         })
             .then((response: Response) => response.json())
             .then((data: CalendarEvent[]): void => setEvents(data))
-            .catch((error: ErrorEvent): void => console.log('error: ', error.message))
+            .catch((error: ErrorEvent): void => {
+                console.log(error.message);
+                setError("There has been an error displaying your calendar events, please refresh the page and try again");
+                }
+            )
     }
 
     const handleSelect = (event: SelectChangeEvent<number>): void => setSelectedCalendarId(event.target.value as number);
@@ -78,6 +87,7 @@ const App: FC = (): ReactElement => {
         <div className="column is-12 has-text-centered">
           <Typography className="mt-2" variant={"h2"}>Calendar</Typography>
           <Typography className="mt-2" variant={"h6"}>Organisation, made easy.</Typography>
+            {error && <Alert severity="error">This is an error alert — check it out!</Alert>}
         </div>
       </div>
 

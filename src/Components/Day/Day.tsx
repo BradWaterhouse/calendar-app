@@ -1,5 +1,5 @@
 import React, {FC, ReactElement} from "react";
-import {Typography} from "@mui/material";
+import {Box, Button, Modal, Typography} from "@mui/material";
 import {DateTime} from "luxon";
 import {CalendarEvent} from "../../Interfaces/CalendarEvent";
 
@@ -7,11 +7,13 @@ interface Props {
     day: number;
     date: DateTime;
     events: CalendarEvent[];
+    handleOpen: () => void;
+    setSelectedDate: (date: DateTime) => void;
 }
 
 const Day: FC<Props> = (props: Props): ReactElement => {
     return <>
-        <div className="column is-2 mb-1"
+        <div className="column is-2 mb-1" onClick={() => props.setSelectedDate(props.date)}
              style={{
                  borderStyle: "solid",
                  borderColor: "black",

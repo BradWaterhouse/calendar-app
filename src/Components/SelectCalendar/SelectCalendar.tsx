@@ -6,7 +6,7 @@ import {CalendarEvent} from "../../Interfaces/CalendarEvent";
 
 interface Props {
     selectedCalendarId: number | null
-    handleChange: (event: SelectChangeEvent<number>) => void;
+    setSelectedCalendarId: (id: number) => void;
     setEvents: (events: CalendarEvent[]) => void;
     setError: (error: string) => void;
 }
@@ -24,6 +24,8 @@ const SelectCalendar: FC<Props> = (props: Props): ReactElement => {
     useEffect((): void => fetchEvents(), [props.selectedCalendarId]);
 
     const [calendarController, eventsController] = useAbortController(2);
+
+    const handleSelect = (event: SelectChangeEvent<number>): void => props.setSelectedCalendarId(event.target.value as number);
 
     const fetchCalendars = (): void => {
         fetch("http://127.0.0.1:8888/calendar/select", {
@@ -72,7 +74,7 @@ const SelectCalendar: FC<Props> = (props: Props): ReactElement => {
                                 id="demo-simple-select"
                                 value={props.selectedCalendarId ?? 0}
                                 label="Select Calendar"
-                                onChange={props.handleChange}
+                                onChange={handleSelect}
                             >
                                 <MenuItem key={0} value={0}>{"Please Select Calendar"}</MenuItem>
                                 {calendars.map((calendar: UsersCalendar): ReactElement =>

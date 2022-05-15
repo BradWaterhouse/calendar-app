@@ -1,5 +1,5 @@
 import React, {FC, ReactElement, useState} from 'react';
-import {Alert, SelectChangeEvent, Typography} from '@mui/material';
+import {Alert, Typography} from '@mui/material';
 import SelectCalendar from "./SelectCalendar/SelectCalendar";
 import Day from "./Day/Day";
 import {DateTime} from "luxon";
@@ -23,14 +23,6 @@ const App: FC = (): ReactElement => {
         setSelectedDay(date);
        date && handleOpen();
     }
-
-    const handleSelect = (event: SelectChangeEvent<number>): void => setSelectedCalendarId(event.target.value as number);
-
-    const handleNextMonth = (): void => setSelectedDate(selectedDate.plus({month: 1}))
-
-    const handlePreviousMonth = (): void => setSelectedDate(selectedDate.minus({month: 1}))
-
-    const handleResetMonth = (): void => setSelectedDate(DateTime.local)
 
     const getDaysInSelectedMonth = (): number[] => {
         const days = [];
@@ -61,13 +53,16 @@ const App: FC = (): ReactElement => {
         </div>
       </div>
 
-        <SelectCalendar selectedCalendarId={selectedCalendarId} handleChange={handleSelect} setEvents={setEvents} setError={setError} />
+        <SelectCalendar
+            selectedCalendarId={selectedCalendarId}
+            setSelectedCalendarId={setSelectedCalendarId}
+            setEvents={setEvents}
+            setError={setError}
+        />
 
         <SelectDate
-            handleNextMonthChange={handleNextMonth}
-            handlePreviousMonthChange={handlePreviousMonth}
-            handleResetDateChange={handleResetMonth}
             selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
         />
 
         <div className="columns is-multiline">

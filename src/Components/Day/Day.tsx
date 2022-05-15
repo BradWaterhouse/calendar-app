@@ -7,12 +7,19 @@ interface Props {
     day: number;
     date: DateTime;
     events: CalendarEvent[];
-    setSelectedDate: (date: DateTime) => void;
+    setSelectedDay: (date: DateTime) => void;
+    setOpen: (open: boolean) => void;
 }
 
 const Day: FC<Props> = (props: Props): ReactElement => {
+
+    const setActiveDay = (date: DateTime) => {
+        props.setSelectedDay(date);
+        date && props.setOpen(true);
+    }
+
     return <>
-        <div className="column is-2 mb-1" onClick={() => props.setSelectedDate(props.date)}
+        <div className="column is-2 mb-1" onClick={() => setActiveDay(props.date)}
              style={{
                  borderStyle: "solid",
                  borderColor: "black",

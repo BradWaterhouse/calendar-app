@@ -15,11 +15,6 @@ const App: FC = (): ReactElement => {
     const [error, setError] = useState<string>("");
     const [open, setOpen] = useState(false);
 
-    const setActiveDay = (date: DateTime) => {
-        setSelectedDay(date);
-       date && setOpen(true);
-    }
-
     const getDaysInSelectedMonth = (): number[] => {
         const days = [];
         const daysInMonth = selectedDate.daysInMonth;
@@ -71,7 +66,8 @@ const App: FC = (): ReactElement => {
                     day={day}
                     date={date}
                     events={getEventsForDate(date.toFormat('y-MM-dd'))}
-                    setSelectedDate={setActiveDay}
+                    setSelectedDay={setSelectedDay}
+                    setOpen={setOpen}
                 />
             })}
         </div>

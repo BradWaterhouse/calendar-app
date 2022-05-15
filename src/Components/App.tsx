@@ -1,11 +1,10 @@
-import React, {FC, ReactElement, useEffect, useState} from 'react';
+import React, {FC, ReactElement, useState} from 'react';
 import {Alert, SelectChangeEvent, Typography} from '@mui/material';
 import SelectCalendar from "./SelectCalendar/SelectCalendar";
 import Day from "./Day/Day";
 import {DateTime} from "luxon";
 import SelectDate from "./SelectDate/SelectDate";
 import {CalendarEvent} from "../Interfaces/CalendarEvent";
-import {useAbortController} from "../Hooks/UseAbortController/UseAbortController";
 import EventModal from "./EventModal/EventModal";
 
 const App: FC = (): ReactElement => {
@@ -16,10 +15,6 @@ const App: FC = (): ReactElement => {
     const [error, setError] = useState<string>("");
     const [open, setOpen] = useState(false);
 
-    const [eventsController] = useAbortController(1);
-
-    useEffect((): void => fetchEvents(), [selectedCalendarId]);
-
     const handleOpen = (): void => setOpen(true);
 
     const handleClose = (): void => setOpen(false);
@@ -27,24 +22,6 @@ const App: FC = (): ReactElement => {
     const setActiveDay = (date: DateTime) => {
         setSelectedDay(date);
        date && handleOpen();
-    }
-
-    const fetchEvents = (): void => {
-        fetch("http://127.0.0.1:8888/calendar/events", {
-            method: "POST",
-            signal: eventsController.signal,
-            body: JSON.stringify({id: selectedCalendarId}),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then((response: Response) => response.json())
-            .then((data: CalendarEvent[]): void => setEvents(data))
-            .catch((error: ErrorEvent): void => {
-                console.log(error.message);
-                setError("There has been an error displaying your calendar events, please refresh the page and try again");
-                }
-            )
     }
 
     const handleSelect = (event: SelectChangeEvent<number>): void => setSelectedCalendarId(event.target.value as number);
@@ -84,7 +61,7 @@ const App: FC = (): ReactElement => {
         </div>
       </div>
 
-        <SelectCalendar selectedCalendarId={selectedCalendarId} handleChange={handleSelect} setError={setError} />
+        <SelectCalendar selectedCalendarId={selectedCalendarId} handleChange={handleSelect} setEvents={setEvents} setError={setError} />
 
         <SelectDate
             handleNextMonthChange={handleNextMonth}

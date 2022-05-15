@@ -7,7 +7,6 @@ interface Props {
     day: number;
     date: DateTime;
     events: CalendarEvent[];
-    handleOpen: () => void;
     setSelectedDate: (date: DateTime) => void;
 }
 

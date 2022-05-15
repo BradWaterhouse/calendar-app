@@ -11,11 +11,10 @@ interface Props {
 }
 
 const EventModal: FC<Props> = (props: Props): ReactElement => {
-
     return (
         <>
         <Modal
-            hideBackdrop
+            // hideBackdrop
             open={props.open}
             onClose={props.handleClose}
             aria-labelledby="modal-modal-title"

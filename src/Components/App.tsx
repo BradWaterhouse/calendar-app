@@ -15,13 +15,9 @@ const App: FC = (): ReactElement => {
     const [error, setError] = useState<string>("");
     const [open, setOpen] = useState(false);
 
-    const handleOpen = (): void => setOpen(true);
-
-    const handleClose = (): void => setOpen(false);
-
     const setActiveDay = (date: DateTime) => {
         setSelectedDay(date);
-       date && handleOpen();
+       date && setOpen(true);
     }
 
     const getDaysInSelectedMonth = (): number[] => {
@@ -75,7 +71,6 @@ const App: FC = (): ReactElement => {
                     day={day}
                     date={date}
                     events={getEventsForDate(date.toFormat('y-MM-dd'))}
-                    handleOpen={handleOpen}
                     setSelectedDate={setActiveDay}
                 />
             })}
@@ -83,7 +78,7 @@ const App: FC = (): ReactElement => {
 
         <EventModal
             open={open}
-            handleClose={handleClose}
+            handleClose={() => setOpen(false)}
             selectedDay={selectedDay ?? null}
             events={getEventsForDate(selectedDay?.toFormat("y-MM-dd"))}
         />

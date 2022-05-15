@@ -8,13 +8,7 @@ import {CalendarEvent} from "../Interfaces/CalendarEvent";
 import {useAbortController} from "../Hooks/UseAbortController/UseAbortController";
 import EventModal from "./EventModal/EventModal";
 
-interface Calendar {
-    id: number;
-    name: string;
-}
-
 const App: FC = (): ReactElement => {
-    const [calendars, setCalendars] = useState<Calendar[]>([]);
     const [selectedCalendarId, setSelectedCalendarId] = useState<number>(0);
     const [selectedDate, setSelectedDate] = useState<DateTime>(DateTime.local);
     const [selectedDay, setSelectedDay] = useState<DateTime | null>();
@@ -22,9 +16,7 @@ const App: FC = (): ReactElement => {
     const [error, setError] = useState<string>("");
     const [open, setOpen] = useState(false);
 
-    const [controller] = useAbortController(1);
-
-    useEffect((): void => fetchCalendars(), [])
+    const [eventsController] = useAbortController(1);
 
     useEffect((): void => fetchEvents(), [selectedCalendarId]);
 
@@ -37,27 +29,10 @@ const App: FC = (): ReactElement => {
        date && handleOpen();
     }
 
-    const fetchCalendars = (): void => {
-        fetch("http://127.0.0.1:8888/calendar/select", {
-            method: "GET",
-            signal: controller.signal,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then((response: Response) => response.json())
-            .then((data: Calendar[]): void => setCalendars(data))
-            .catch((error: ErrorEvent): void => {
-                console.log(error.message);
-                setError("There has been an error displaying your calendars, please refresh the page and try again")
-                }
-            )
-    }
-
     const fetchEvents = (): void => {
         fetch("http://127.0.0.1:8888/calendar/events", {
             method: "POST",
-            signal: controller.signal,
+            signal: eventsController.signal,
             body: JSON.stringify({id: selectedCalendarId}),
             headers: {
                 'Content-Type': 'application/json'
@@ -109,7 +84,7 @@ const App: FC = (): ReactElement => {
         </div>
       </div>
 
-        <SelectCalendar calendars={calendars} selectedCalendarId={selectedCalendarId} handleChange={handleSelect} />
+        <SelectCalendar selectedCalendarId={selectedCalendarId} handleChange={handleSelect} setError={setError} />
 
         <SelectDate
             handleNextMonthChange={handleNextMonth}

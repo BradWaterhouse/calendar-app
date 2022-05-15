@@ -1,5 +1,5 @@
 import React, {FC, ReactElement} from "react";
-import {Box, Button, Modal, Typography} from "@mui/material";
+import { Typography } from "@mui/material";
 import {DateTime} from "luxon";
 import {CalendarEvent} from "../../Interfaces/CalendarEvent";
 

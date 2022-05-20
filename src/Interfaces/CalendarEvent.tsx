@@ -3,5 +3,5 @@ export interface CalendarEvent {
     title: string;
     date: string;
     time: string
-    information: string
+    description: string
 }

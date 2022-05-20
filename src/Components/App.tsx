@@ -6,6 +6,8 @@ import {DateTime} from "luxon";
 import SelectDate from "./SelectDate/SelectDate";
 import {CalendarEvent} from "../Interfaces/CalendarEvent";
 import EventModal from "./EventModal/EventModal";
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+import { LocalizationProvider } from '@mui/x-date-pickers';
 
 const App: FC = (): ReactElement => {
     const [selectedCalendarId, setSelectedCalendarId] = useState<number>(0);
@@ -35,51 +37,54 @@ const App: FC = (): ReactElement => {
     };
 
   return (
-    <div className="container">
-      <div className="columns">
-        <div className="column is-12 has-text-centered">
-          <Typography className="mt-2" variant={"h2"}>Calendar</Typography>
-          <Typography className="mt-2" variant={"h6"}>Organisation, made easy.</Typography>
-            {error && <Alert severity="error">{error}</Alert>}
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <div className="container">
+          <div className="columns">
+            <div className="column is-12 has-text-centered">
+              <Typography className="mt-2" variant={"h2"}>Calendar</Typography>
+              <Typography className="mt-2" variant={"h6"}>Organisation, made easy.</Typography>
+                {error && <Alert severity="error">{error}</Alert>}
+            </div>
+          </div>
+
+            <SelectCalendar
+                selectedCalendarId={selectedCalendarId}
+                setSelectedCalendarId={setSelectedCalendarId}
+                setEvents={setEvents}
+                setError={setError}
+            />
+
+            <SelectDate
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+            />
+
+            <div className="columns is-multiline">
+                {getDaysInSelectedMonth().map((day: number): ReactElement => {
+                    const startOfMonthMinusOneDay = selectedDate.startOf("month").minus({day: 1});
+                    const date = startOfMonthMinusOneDay.plus({day: day});
+
+                    return <Day
+                        key={day}
+                        day={day}
+                        date={date}
+                        events={getEventsForDate(date.toFormat('y-MM-dd'))}
+                        setSelectedDay={setSelectedDay}
+                        setOpen={setOpen}
+                    />
+                })}
+            </div>
+
+            <EventModal
+                open={open}
+                handleClose={() => setOpen(false)}
+                selectedDay={selectedDay ?? null}
+                selectedCalendarId={selectedCalendarId}
+                events={getEventsForDate(selectedDay?.toFormat("y-MM-dd"))}
+            />
+
         </div>
-      </div>
-
-        <SelectCalendar
-            selectedCalendarId={selectedCalendarId}
-            setSelectedCalendarId={setSelectedCalendarId}
-            setEvents={setEvents}
-            setError={setError}
-        />
-
-        <SelectDate
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-        />
-
-        <div className="columns is-multiline">
-            {getDaysInSelectedMonth().map((day: number): ReactElement => {
-                const startOfMonthMinusOneDay = selectedDate.startOf("month").minus({day: 1});
-                const date = startOfMonthMinusOneDay.plus({day: day});
-
-                return <Day
-                    key={day}
-                    day={day}
-                    date={date}
-                    events={getEventsForDate(date.toFormat('y-MM-dd'))}
-                    setSelectedDay={setSelectedDay}
-                    setOpen={setOpen}
-                />
-            })}
-        </div>
-
-        <EventModal
-            open={open}
-            handleClose={() => setOpen(false)}
-            selectedDay={selectedDay ?? null}
-            events={getEventsForDate(selectedDay?.toFormat("y-MM-dd"))}
-        />
-
-    </div>
+      </LocalizationProvider>
   );
 }
 

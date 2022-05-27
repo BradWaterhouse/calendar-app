@@ -9,6 +9,7 @@ interface Props {
     setSelectedCalendarId: (id: number) => void;
     setEvents: (events: CalendarEvent[]) => void;
     setError: (error: string) => void;
+    fetchEvents: () => void;
 }
 
 interface Calendar {
@@ -21,9 +22,9 @@ const SelectCalendar: FC<Props> = (props: Props): ReactElement => {
 
     useEffect((): void => fetchCalendars(), [])
 
-    useEffect((): void => fetchEvents(), [props.selectedCalendarId]);
+    useEffect((): void => props.fetchEvents(), [props.selectedCalendarId]);
 
-    const [calendarController, eventsController] = useAbortController(2);
+    const [calendarController] = useAbortController(1);
 
     const handleSelect = (event: SelectChangeEvent<number>): void => props.setSelectedCalendarId(event.target.value as number);
 
@@ -40,24 +41,6 @@ const SelectCalendar: FC<Props> = (props: Props): ReactElement => {
             .catch((error: ErrorEvent): void => {
                     console.log(error.message);
                     props.setError("There has been an error displaying your calendars, please refresh the page and try again")
-                }
-            )
-    }
-
-    const fetchEvents = (): void => {
-        fetch("http://127.0.0.1:8888/calendar/events", {
-            method: "POST",
-            signal: eventsController.signal,
-            body: JSON.stringify({id: props.selectedCalendarId}),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then((response: Response) => response.json())
-            .then((data: CalendarEvent[]): void => props.setEvents(data))
-            .catch((error: ErrorEvent): void => {
-                    console.log(error.message);
-                    props.setError("There has been an error displaying your calendar events, please refresh the page and try again");
                 }
             )
     }

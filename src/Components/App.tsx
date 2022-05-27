@@ -8,6 +8,7 @@ import {CalendarEvent} from "../Interfaces/CalendarEvent";
 import EventModal from "./EventModal/EventModal";
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import {useAbortController} from "../Hooks/UseAbortController/UseAbortController";
 
 const App: FC = (): ReactElement => {
     const [selectedCalendarId, setSelectedCalendarId] = useState<number>(0);
@@ -16,6 +17,26 @@ const App: FC = (): ReactElement => {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     const [error, setError] = useState<string>("");
     const [open, setOpen] = useState(false);
+
+    const [eventsController] = useAbortController(1);
+
+    const fetchEvents = (): void => {
+        fetch("http://127.0.0.1:8888/calendar/events", {
+            method: "POST",
+            signal: eventsController.signal,
+            body: JSON.stringify({id: selectedCalendarId}),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then((response: Response) => response.json())
+            .then((data: CalendarEvent[]): void => setEvents(data))
+            .catch((error: ErrorEvent): void => {
+                    console.log(error.message);
+                    setError("There has been an error displaying your calendar events, please refresh the page and try again");
+                }
+            )
+    }
 
     const getDaysInSelectedMonth = (): number[] => {
         const days = [];
@@ -52,6 +73,7 @@ const App: FC = (): ReactElement => {
                 setSelectedCalendarId={setSelectedCalendarId}
                 setEvents={setEvents}
                 setError={setError}
+                fetchEvents={fetchEvents}
             />
 
             <SelectDate
@@ -81,6 +103,7 @@ const App: FC = (): ReactElement => {
                 selectedDay={selectedDay ?? null}
                 selectedCalendarId={selectedCalendarId}
                 events={getEventsForDate(selectedDay?.toFormat("y-MM-dd"))}
+                fetchEvents={fetchEvents}
             />
 
         </div>

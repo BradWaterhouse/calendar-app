@@ -9,7 +9,8 @@ interface Props {
     handleClose: () => void;
     selectedDay: DateTime | null;
     selectedCalendarId: number;
-    events: CalendarEvent[]
+    events: CalendarEvent[];
+    fetchEvents: () => void;
 }
 
 const EventModal: FC<Props> = (props: Props): ReactElement => {
@@ -46,7 +47,7 @@ const EventModal: FC<Props> = (props: Props): ReactElement => {
                     )}
                 </div>
 
-                <AddEvent selectedDay={props.selectedDay} selectedCalendar={props.selectedCalendarId} />
+                <AddEvent selectedDay={props.selectedDay} selectedCalendar={props.selectedCalendarId} fetchEvents={props.fetchEvents} />
 
                 <Button variant="contained" color="error" className="mt-4 mb-2 is-pulled-right" onClick={props.handleClose}>Close</Button>
             </Box>

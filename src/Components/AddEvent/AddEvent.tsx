@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FC, ReactElement, useState} from "react";
-import {Alert, Button, Divider, TextField, Typography} from "@mui/material";
+import {Alert, Button, TextField, Typography} from "@mui/material";
 import {DatePicker, TimePicker} from "@mui/x-date-pickers";
 import {DateTime} from "luxon";
 import {useAbortController} from "../../Hooks/UseAbortController/UseAbortController";
@@ -7,6 +7,7 @@ import {useAbortController} from "../../Hooks/UseAbortController/UseAbortControl
 interface Props {
     selectedDay: DateTime | null;
     selectedCalendar: number;
+    fetchEvents: () => void;
 }
 
 
@@ -31,15 +32,6 @@ const AddEvent: FC<Props> = (props: Props): ReactElement => {
     const addEvent = (): void => {
         setSuccess(false);
         setError(false);
-
-        console.log(JSON.stringify({
-            title,
-            description,
-            calendarId: props.selectedCalendar,
-            date: date?.toFormat('y-MM-dd'),
-            time: time?.toFormat("HH:mm")
-
-        }))
 
         fetch("http://127.0.0.1:8888/event/insert", {
             method: "POST",
@@ -68,6 +60,7 @@ const AddEvent: FC<Props> = (props: Props): ReactElement => {
                     throw new Error(response.error);
                 } else {
                     setSuccess(true);
+                    props.fetchEvents();
                 }
             })
             .catch(() => setError(true))

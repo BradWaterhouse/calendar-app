@@ -19,12 +19,13 @@ const Day: FC<Props> = (props: Props): ReactElement => {
     }
 
     return <>
-        <div className="column is-2 mb-1" onClick={() => setActiveDay(props.date)}
+        <div className="column is-one-fifth mb-1" onClick={() => setActiveDay(props.date)}
              style={{
                  borderStyle: "solid",
                  borderColor: "black",
                  borderRadius: 5,
                  marginBottom: 0.2,
+                 width: "14.2857%",
                  borderWidth: 1.5,
                  minHeight: 175,
                  maxHeight: 175,
@@ -38,7 +39,14 @@ const Day: FC<Props> = (props: Props): ReactElement => {
             </span>
 
             {props.events.map((event: CalendarEvent, index: number): ReactElement =>
-                <Typography key={index} className="mt-2" variant={"body1"}>{event.title} {"-"} {event.time}</Typography>
+                <Typography
+                    key={index}
+                    className="mt-1"
+                    variant={"body1"}
+                    style={{backgroundColor: event.end_date ? "#99f0ff" : "", textAlign: "center"}}
+                >
+                    {event.title}
+                </Typography>
             )}
 
         </div>

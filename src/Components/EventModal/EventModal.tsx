@@ -17,7 +17,6 @@ const EventModal: FC<Props> = (props: Props): ReactElement => {
     return (
         <>
         <Modal
-            // hideBackdrop
             open={props.open}
             onClose={props.handleClose}
             aria-labelledby="modal-modal-title"
@@ -40,7 +39,7 @@ const EventModal: FC<Props> = (props: Props): ReactElement => {
                 <div style={{ margin: 2 }}>
                     {props.events.map((event: CalendarEvent): ReactElement =>
                         <>
-                            <Typography key={event.id} className="mt-2" variant={"h6"}>{event.title} {"-"} {event.time}</Typography>
+                            <Typography key={event.id} className="mt-2" variant={"h6"}>{event.title} {"-"} {event.start_time}</Typography>
                             <Divider className="mt-2" variant="middle" />
                             <Typography className="mt-2" variant={"subtitle2"}>{event.description}</Typography>
                         </>

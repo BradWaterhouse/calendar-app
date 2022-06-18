@@ -51,7 +51,11 @@ const App: FC = (): ReactElement => {
 
     const getEventsForDate = (date: string | null | undefined): CalendarEvent[] => {
         if (date) {
-            return events.filter((event: CalendarEvent) => DateTime.fromISO(event.date).toFormat('y-MM-dd') === date)
+            return events.filter(
+                (event: CalendarEvent) =>
+                    date >= DateTime.fromISO(event.start_date).toFormat('y-MM-dd') &&
+                    date <= DateTime.fromISO((event.end_date ? event.end_date : event.start_date )).toFormat('y-MM-dd')
+            )
         }
 
         return [];

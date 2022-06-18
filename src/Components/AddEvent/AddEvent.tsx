@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FC, ReactElement, useState} from "react";
-import {Alert, Button, TextField, Typography} from "@mui/material";
+import {Alert, Button, Checkbox, FormControlLabel, FormGroup, TextField, Typography} from "@mui/material";
 import {DatePicker, TimePicker} from "@mui/x-date-pickers";
 import {DateTime} from "luxon";
 import {useAbortController} from "../../Hooks/UseAbortController/UseAbortController";
@@ -13,21 +13,37 @@ interface Props {
 
 const AddEvent: FC<Props> = (props: Props): ReactElement => {
     const [title, setTitle] = useState<string>("");
-    const [date, setDate] = useState<DateTime | null>(props.selectedDay);
-    const [time, setTime] = useState<DateTime | null>(DateTime.local);
+    const [startDate, setStartDate] = useState<DateTime | null>(props.selectedDay);
+    const [startTime, setStartTime] = useState<DateTime | null>(DateTime.local);
+    const [endDate, setEndDate] = useState<DateTime | null>(null);
+    const [endTime, setEndTime] = useState<DateTime | null>(null);
     const [description, setDescription] = useState<string>("");
+    const [toggleEndDateTime, setToggleEndDateTime] = useState<boolean>(false);
     const [success, setSuccess] = useState<boolean>(false);
     const [error, setError] = useState<boolean>(false);
 
     const [addEventController] = useAbortController(1);
 
-    const handleDateChange = (date: DateTime | null): void => setDate(date);
+    const handleStartDateChange = (date: DateTime | null): void => setStartDate(date);
 
-    const handleTimeChange = (time: DateTime | null): void => setTime(time);
+    const handleStartTimeChange = (time: DateTime | null): void => setStartTime(time);
+
+    const handleEndDateChange = (date: DateTime | null): void => setEndDate(date);
+
+    const handleEndTimeChange = (time: DateTime | null): void => setEndTime(time);
 
     const handleTitleChange = (event: ChangeEvent<HTMLInputElement>): void => setTitle(event.target.value);
 
     const handleDescriptionChange = (event: ChangeEvent<HTMLTextAreaElement>): void => setDescription(event.target.value);
+
+    const handleToggle = (event: ChangeEvent<HTMLInputElement>): void => {
+        setToggleEndDateTime(event.target.checked);
+
+        if (!event.target.checked) {
+            setEndDate(null);
+            setEndTime(null);
+        }
+    }
 
     const addEvent = (): void => {
         setSuccess(false);
@@ -43,8 +59,9 @@ const AddEvent: FC<Props> = (props: Props): ReactElement => {
                 calendarId: props.selectedCalendar,
                 title,
                 description,
-                date: date?.toFormat('y-MM-dd'),
-                time: time?.toFormat("HH:mm")
+                start_date: startDate?.toFormat('y-MM-dd'),
+                start_time: startTime?.toFormat("HH:mm"),
+                end_date: endDate?.toFormat('y-MM-dd')
 
             })
         })
@@ -77,11 +94,24 @@ const AddEvent: FC<Props> = (props: Props): ReactElement => {
                         <TextField id="outlined-basic" name="title" label="Event Title" variant="outlined" fullWidth={true} value={title} onChange={handleTitleChange} />
                     </div>
                     <div className="column is-3">
-                        <DatePicker label="Date" value={date} renderInput={(params) => <TextField {...params} />} onChange={handleDateChange} />
+                        <DatePicker label="Start Date" value={startDate} renderInput={(params) => <TextField {...params} />} onChange={handleStartDateChange} />
                     </div>
                     <div className="column is-3">
-                        <TimePicker label="Time" value={time} renderInput={(params) => <TextField {...params} />} onChange={handleTimeChange} />
+                        <TimePicker label="Start Time" value={startTime} renderInput={(params) => <TextField {...params} />} onChange={handleStartTimeChange} />
                     </div>
+                    <div className="column is-6">
+                        <FormControlLabel control={<Checkbox onChange={handleToggle} />} label="Add End Date" />
+                    </div>
+                    {toggleEndDateTime && (
+                        <>
+                            <div className="column is-3">
+                                <DatePicker label="End Date" value={endDate} renderInput={(params) => <TextField {...params} />} onChange={handleEndDateChange} />
+                            </div>
+                            <div className="column is-3">
+                                <TimePicker label="End Time" value={endTime} renderInput={(params) => <TextField {...params} />} onChange={handleEndTimeChange} />
+                            </div>
+                        </>
+                    )}
                     <div className="column is-12">
                         <TextField id="outlined-basic" name="description" variant="outlined" label="Event Description" multiline rows={4} fullWidth={true} value={description} onChange={handleDescriptionChange}/>
                     </div>

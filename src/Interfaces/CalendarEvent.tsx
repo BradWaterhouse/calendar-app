@@ -1,7 +1,8 @@
 export interface CalendarEvent {
     id: number;
     title: string;
-    date: string;
-    time: string
+    start_date: string;
+    start_time: string
+    end_date: string
     description: string
 }

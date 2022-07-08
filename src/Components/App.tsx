@@ -58,7 +58,7 @@ const App: FC = (): ReactElement => {
     const getEventsForDate = (date: string | null | undefined): CalendarEvent[] => {
         if (date) {
             return events.filter(
-                (event: CalendarEvent) =>
+                (event: CalendarEvent): boolean =>
                     date >= DateTime.fromISO(event.start_date).toFormat('y-MM-dd') &&
                     date <= DateTime.fromISO((event.end_date ? event.end_date : event.start_date)).toFormat('y-MM-dd')
             )
@@ -107,10 +107,7 @@ const App: FC = (): ReactElement => {
                             />
                         }
 
-                        return <>
-                            <div className="column is-one-fifth mb-1" style={{width: "14.2857%",}}>
-                            </div>
-                        </>
+                        return <div className="column is-one-fifth mb-1" style={{width: "14.2857%"}} />
 
                     })}
                 </div>
